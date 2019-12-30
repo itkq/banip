@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'banip/cli'
+require 'banip/state_store'
+require 'banip/ban_updater'
+
+state_store = Banip::StateStore::S3.new(ENV.fetch('BANIP_REGION'), ENV.fetch('BANIP_S3_BUCKET'), ENV.fetch('BANIP_S3_STATE_KEY'))
+
+ban_updaters = [
+  Banip::BanUpdater::WAF.new(ENV.fetch('BANIP_REGION'), ENV.fetch('BANIP_WAF_IP_SET_ID')),
+]
+
+Banip::CLI.new(state_store, ban_updaters).start
